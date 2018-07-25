@@ -7,4 +7,4 @@ https://scrimba.com/p/pb4WsX/cN8NmSm
 and 
 https://www.codeanalogies.com/d3garden
 
-If I use others I'll post them below.
+If I use other resources I'll post them below.
