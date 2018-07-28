@@ -1,4 +1,4 @@
-// from: https://scrimba.com/p/pb4WsX/cN8NmSm
+// Based off of a turorial found here: https://scrimba.com/p/pb4WsX/cN8NmSm
 // Percent change between 2010 and 2011 or 2017. The final column.
 
 // javascript
@@ -44,12 +44,41 @@ d3.text("./SourceFiles/nccountiespopprcchng1017.csv").then(function (text) {
     var barWidth = svgWidth / myData.length;
     var svg = d3.select('svg')
         .attr("width", svgWidth)
-        .attr("height", svgHeight+25); // The '+25' extends the svgHeight below the bars.
+        .attr("height", svgHeight + 25); // The '+25' extends the svgHeight below the bars.
+
+    var xScale = d3.scaleLinear()
+        .domain([0, d3.max(myData)])
+        .range([0, svgWidth]);
 
     var yScale = d3.scaleLinear()
         .domain([0, d3.max(myData, function (d) { return +d.prcchng1617; })])
         // .domain([0, d3.max(dataset)])
         .range([0, svgHeight]);
+
+    var x_axis = d3.axisBottom()
+        .scale(xScale);
+
+    var y_axis = d3.axisLeft().scale(yScale);
+
+    svg.append("g")
+        .attr("transform", "translate(50, 10)")
+        .call(y_axis);
+
+    var xAxisTranslate = svgHeight - 20;
+
+    svg.append("g")
+        .attr("transform", "translate(50, " + xAxisTranslate + ")")
+        .call(x_axis);
+
+
+
+
+
+
+
+
+
+
 
     // var max = d3.max(data, function(d) { return +d.field_goal_attempts;} );
 
@@ -100,6 +129,7 @@ d3.text("./SourceFiles/nccountiespopprcchng1017.csv").then(function (text) {
 
 
         // trying to round down to two decimal places.
+        // from: https://stackoverflow.com/questions/15762768/javascript-math-round-to-two-decimal-places
         .text(function roundTo(d, digits) {
             var negative = false;
             if (digits === undefined) {
