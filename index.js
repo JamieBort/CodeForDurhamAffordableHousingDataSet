@@ -5,115 +5,129 @@
 // var dataset = [80, 100, 56, 120, 180, 30, 40, 120, 160];
 
 // From: https://github.com/d3/d3-dsv#installing
-var string = "go away"
+// var string = "go away"
 
-var data = d3.csvParse(string);
+// var data = d3.csvParse(string);
 
-// From: https://github.com/d3/d3-fetch
-d3.csv("./SourceFiles/nccountiespopprcchng1017.csv").then(function(data) {
-// d3.csv("https://crossorigin.me./SourceFiles/nccountiespopprcchng1017.csv").then(function(data) {
-    console.log("hello");
-//  console.log(data); // [{"Hello": "world"}, …]
+// from: https://github.com/d3/d3-fetch
+d3.text("./SourceFiles/nccountiespopprcchng1017.csv").then(function (text) {
+    // console.log("hello!")
+    // console.log(text); // Hello, world!
+    var psv = d3.dsvFormat("|");
+    var myData = psv.parse(text)
+    // console.log(psv.parse(text)[0].Geography);
+    // console.log(psv.parse("foo|bar\n1|2")); // [{foo: "1", bar: "2"}, columns: ["foo", "bar"]]
+    // console.log(psv.parse(text[0].Geography));
+    // console.log(myData[0].prcchng1516);
+    console.log(myData);
+    console.log(myData.length);
+
+
+
+
+
+    // From: https://github.com/d3/d3-fetch
+    // d3.csv("./SourceFiles/nccountiespopprcchng1017.csv").then(function(data) {
+
+    //     // The below is no longer needed because I am spinning up a server with 'npm install -g http-server'.
+    // // d3.csv("https://crossorigin.me./SourceFiles/nccountiespopprcchng1017.csv").then(function(data) {
+
+    //     console.log("hello");
+    // //  console.log(data); // [{"Hello": "world"}, …]
+    // });
+
+
+    var svgWidth = 1200, svgHeight = 300, barPadding = 2;
+    // var svgWidth = 1200, svgHeight = 300, barPadding = 5;
+    // var barWidth = svgWidth / data.length;
+    // var barWidth = svgWidth/20;
+    var barWidth = svgWidth / myData.length;
+    var svg = d3.select('svg')
+        .attr("width", svgWidth)
+        .attr("height", svgHeight+25); // The '+25' extends the svgHeight below the bars.
+
+    var yScale = d3.scaleLinear()
+        .domain([0, d3.max(myData, function (d) { return +d.prcchng1617; })])
+        // .domain([0, d3.max(dataset)])
+        .range([0, svgHeight]);
+
+    // var max = d3.max(data, function(d) { return +d.field_goal_attempts;} );
+
+    var barChart = svg.selectAll("rect")
+        // .data(data)
+        .data(myData)
+        .enter()
+        .append("rect")
+        .attr("y", function (d) {
+            // console.log(svgHeight - d.prcchng1617);
+            // console.log(svgHeight - yScale(d.prcchng1617));
+            // return svgHeight - d.prcchng1617;
+            return svgHeight - yScale(d.prcchng1617) + 25; // the '+25" shifts the bars down.
+        })
+        .attr("height", function (d) {
+            //  console.log(d.prcchng1617);
+            // return d.prcchng1617;
+            return yScale(d.prcchng1617);
+        })
+        .attr("width", barWidth - barPadding)
+        .attr("class", "bar")
+        .attr("transform", function (d, i) {
+            var translate = [barWidth * i, 0];
+            return "translate(" + translate + ")";
+        });
+
+    var text = svg.selectAll("text")
+        // .data(data)
+        .data(myData)
+        .enter()
+        .append("text")
+        // .text(function (d) {
+        //     // console.log(d.prcchng1617.toFixed(2));
+        //     // console.log(d.prcchng1617);
+        //     return d.prcchng1617;
+        //     // return d;
+        // })
+
+
+
+        // trying to round down to two decimal places.
+        // .text(function toFixed(d, fixed) {
+        //     var re = new RegExp('^-?\\d+(?:\.\\d{0,' + (fixed || -1) + '})?');
+        //     console.log(d.prcchng1617.toString().match(re)[0]);
+        //     return d.prcchng1617.toString().match(re)[0];
+        // })
+
+
+
+        // trying to round down to two decimal places.
+        .text(function roundTo(d, digits) {
+            var negative = false;
+            if (digits === undefined) {
+                digits = 0;
+            }
+            if (d.prcchng1617 < 0) {
+                negative = true;
+                d.prcchng1617 = d.prcchng1617 * -1;
+            }
+            var multiplicator = Math.pow(10, digits);
+            d.prcchng1617 = parseFloat((d.prcchng1617 * multiplicator).toFixed(11));
+            d.prcchng1617 = (Math.round(d.prcchng1617) / multiplicator).toFixed(2);
+            if (negative) {
+                d.prcchng1617 = (d.prcchng1617 * -1).toFixed(2);
+            }
+            return d.prcchng1617;
+        })
+
+
+
+        .attr("y", function (d, i) {
+            // console.log(svgHeight - d.prcchng1617 - 2);
+            // return svgHeight - d.prcchng1617;
+            return svgHeight - d.prcchng1617 - 280; // Shifts the numbers up/down.
+        })
+        .attr("x", function (d, i) {
+            return barWidth * i;
+        })
+        .attr("fill", "#A64C38");
+
 });
-
-// Copied from source file:
-// |Id2|Geography|prcchng1010|prcchng1011|prcchng1112|prcchng1213|prcchng1314|prcchng1415|prcchng1516|prcchng1617|prcchng1017
-// 0|37001|Alamance County, North Carolina|0.23697933857019793|0.8942999012148567|0.4000755843123427|0.6126268480802|0.8227465991855976|1.0744079954761787|1.215126314137771|1.8880356670012532|6.93388180379455
-// 9|37019|Brunswick County, North Carolina|0.5894436836066164|1.9675789435488977|1.6452387112891542|2.5374133688119027|2.8593390998783663|3.1995878885009432|3.210054371483062|3.4714317364034297|17.92707243099536
-// 10|37021|Buncombe County, North Carolina|0.1738343672638476|1.0326501508970964|1.032653513360493|1.298653967636909|0.9442363077712956|1.129094305351197|1.247385777060639|0.8823517994464458|7.487762366705875
-// 12|37025|Cabarrus County, North Carolina|0.29461680211945174|1.4848698876553268|1.6305527812757847|1.5644368454797997|2.348926756477554|2.3701703894251636|2.6084842712069567|2.561487296492515|13.951138868479063
-// 18|37037|Chatham County, North Carolina|0.5387711632132031|0.48317461307064713|0.6672859575785672|1.1084912882383557|2.211375784162539|2.3780291736092862|2.0136342804766283|2.3057980747705376|11.147022610252966
-// 26|37053|Currituck County, North Carolina|0.5364534932837728|0.9621820615796528|0.5409003911125865|0.9642327344651425|2.298804299690005|1.1776407400039823|2.061253117206985|2.5331358474801613|10.57308875469979
-// 27|37055|Dare County, North Carolina|0.18832391713747842|0.5676165954707657|0.7203857549526571|1.2223114885802855|0.1575615206119152|1.5067294940887654|0.892058165548093|0.9390841851574794|6.036178287487193
-// 31|37063|Durham County, North Carolina|1.3784105525804669|2.0059158988879666|2.160807926613806|2.0639534883720945|2.2006213997062263|1.8965780578668823|1.9264710671138774|1.4600179694519322|14.135861891926583
-// 33|37067|Forsyth County, North Carolina|0.21370379117924276|0.9621373314357418|0.8666329549613438|0.848476454293634|1.083966286346849|0.8061491294350409|0.9935040122277417|1.2505314625850361|6.816007653061229
-// 34|37069|Franklin County, North Carolina|0.3386765310316453|0.22800341184961992|0.7375808001042095|1.107801304242817|1.0089578883611172|1.4467710771454145|1.5465751094201896|2.280558578164671|8.38622899286664
-// 35|37071|Gaston County, North Carolina|0.019890649939113825|0.39816188373092976|0.4866250246438053|0.6316745108345123|0.6687423467208409|1.1670778958823957|1.7155133861680105|1.4892225522522229|6.401976546675026
-// 40|37081|Guilford County, North Carolina|0.233276410076233|1.1495413344210226|1.116144967064736|1.1721270554155616|1.1257635974487923|1.0007301215710362|0.8187802205380845|0.9406911052788347|7.315073640343639
-// 42|37085|Harnett County, North Carolina|0.9346924671734591|2.8973107185397695|2.489816617317475|2.2749072771454104|1.3383175211551968|1.0951210951210988|2.0580753099718074|1.3973213613149182|13.616162224867045
-// 44|37089|Henderson County, North Carolina|0.1337911548141446|0.4934225838585604|0.39318601222214644|1.0424600589136745|1.2621640722686345|1.4369278856887657|1.5673622953989996|1.6852767310816863|7.750544474020815
-// 46|37093|Hoke County, North Carolina|1.1453596092302565|4.027157550162663|2.0330192414284576|1.3185911586021004|0.8675613392978176|2.2025680845422557|0.5761843790012766|1.862665385468254|13.238228989577937
-// 48|37097|Iredell County, North Carolina|0.21154748865592765|0.8218548842637174|1.01139819963747|1.1413888618913348|1.1641240851809842|1.7698332193154198|1.7185516637782672|1.8109281718276082|9.261799204375365
-// 49|37099|Jackson County, North Carolina|0.24523160762942586|-0.23836718478422725|0.9955996951744095|0.915844598709048|-0.16101880992460682|0.8442595190865543|2.2002460490205378|1.6405650059339583|6.287669001466034
-// 50|37101|Johnston County, North Carolina|0.47500058933075406|1.6518483313433863|1.1385449315555185|1.6345302979917875|1.9562226115019232|2.3716395927858125|3.002187405151391|2.8539764524066147|14.14787400614108
-// 59|37119|Mecklenburg County, North Carolina|0.3871308770994841|2.3007736974611115|2.4024895579857097|2.3612899712490365|1.9475633210226273|2.2356980865046117|2.1560917750703013|1.8201454816281437|14.599145460269291
-// 62|37125|Moore County, North Carolina|0.38830129471391084|0.763948786307167|1.045269131861315|1.3072824933541893|1.5466304780983764|1.2686091025095658|1.4173096276417274|1.9246586609639738|9.270644842901799
-// 64|37129|New Hanover County, North Carolina|0.3025353941814801|1.3419268419341268|1.485979297650064|1.8245228640362043|1.4474652011601918|1.5995630106743763|1.5898115878405616|1.7447336684301762|10.797190116110178
-// 66|37133|Onslow County, North Carolina|4.8782967429864765|-1.0139828012085683|2.99183615685904|0.8618493894800294|-0.2663317106730734|0.632872058336098|-0.46254142841533064|0.8736777500992776|8.314379580490272
-// 67|37135|Orange County, North Carolina|0.11123553564762467|0.749840695899584|2.163165296565328|1.064333357240188|0.6901758559533899|0.8222487514392918|0.8127631846303718|1.5336746098547072|7.689070412429455
-// 70|37141|Pender County, North Carolina|0.3834560647105967|1.4606635962026493|1.0215093777910078|1.9770919967899592|2.0123673017121257|2.7089998608985977|2.3515628979404735|3.3810164375471685|14.3393812132944
-// 73|37147|Pitt County, North Carolina|0.41162500074033437|1.1492570518600087|1.2813325396045627|0.8089019342559345|0.36840511997441316|0.6570697413142534|0.7825386906269882|0.7903173557042509|6.0846058466728525
-// 89|37179|Union County, North Carolina|0.41064307695352076|1.4029405164928455|1.5455104314750057|1.956943476541162|2.5584084276983554|1.9343343217231301|1.895029575350926|2.085872600122751|12.99845266806704
-// 91|37183|Wake County, North Carolina|0.6495869372488694|2.4693362872306723|2.4278527821092077|2.252040642584452|2.4002066243940967|2.4363706330656876|2.4099669921068934|2.1507121319377043|15.968058287469821
-// 94|37189|Watauga County, North Carolina|-0.20598736610821788|1.238060178637168|0.8300509174752668|0.5788186750210089|0.1544946499074884|1.2785267756270202|1.8318268359858725|1.854102792039336|7.332958400609568
-
-// Alamance County	North Carolina,6.93388180379455
-// Brunswick County	North Carolina,17.92707243099536
-// Buncombe County	North Carolina,7.487762366705875
-// Cabarrus County	North Carolina,13.951138868479063
-// Chatham County	North Carolina,11.147022610252966
-// Currituck County	North Carolina,10.57308875469979
-// Dare County	North Carolina,6.036178287487193
-// Durham County	North Carolina,14.135861891926583
-// Forsyth County	North Carolina,6.816007653061229
-// Franklin County	North Carolina,8.38622899286664
-// Gaston County	North Carolina,6.401976546675026
-// Guilford County	North Carolina,7.315073640343639
-// Harnett County	North Carolina,13.616162224867045
-// Henderson County	North Carolina,7.750544474020815
-// Hoke County	North Carolina,13.238228989577937
-// Iredell County	North Carolina,9.261799204375365
-// Jackson County	North Carolina,6.287669001466034
-// Johnston County	North Carolina,14.14787400614108
-// Mecklenburg County	North Carolina,14.599145460269291
-// Moore County	North Carolina,9.270644842901799
-// New Hanover County	North Carolina,10.797190116110178
-// Onslow County	North Carolina,8.314379580490272
-// Orange County	North Carolina,7.689070412429455
-// Pender County	North Carolina,14.3393812132944
-// Pitt County	North Carolina,6.0846058466728525
-// Union County	North Carolina,12.99845266806704
-// Wake County	North Carolina,15.968058287469821
-// Watauga County	North Carolina,7.332958400609568
-
-
-var svgWidth = 500, svgHeight = 300, barPadding = 5;
-var barWidth = svgWidth / data.length;
-// var barWidth = svgWidth / dataset.length;
-var svg = d3.select('svg')
-    .attr("width", svgWidth)
-    .attr("height", svgHeight);
-    
-var barChart = svg.selectAll("rect")
-    .data(data)
-    // .data(dataset)
-    .enter()
-    .append("rect")
-    .attr("y", function(d) {
-         return svgHeight - d 
-    })
-    .attr("height", function(d) { 
-        return d; 
-    })
-    .attr("width", barWidth - barPadding)
-    .attr("class", "bar")
-    .attr("transform", function (d, i) {
-        var translate = [barWidth * i, 0]; 
-        return "translate("+ translate +")";
-    });
-
-var text = svg.selectAll("text")
-    .data(data)
-    // .data(dataset)
-    .enter()
-    .append("text")
-    .text(function(d) {
-        return d;
-    })
-    .attr("y", function(d, i) {
-        return svgHeight - d - 2;
-    })
-    .attr("x", function(d, i) {
-        return barWidth * i;
-    })
-    .attr("fill", "#A64C38");
