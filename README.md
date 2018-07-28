@@ -19,7 +19,8 @@ https://medium.freecodecamp.org/how-to-create-your-first-bar-chart-with-d3-js-a0
 and https://github.com/d3/d3/wiki/Tutorials
 and https://www.codeanalogies.com/d3garden/
 and http://alignedleft.com/tutorials
-and https://npm.runkit.com/d3-dsv.
+and https://npm.runkit.com/d3-dsv
+and http://dimplejs.org/.
 
 An example that might be better suited to our needs: https://bl.ocks.org/mbostock/4062085
 
